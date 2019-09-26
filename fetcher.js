@@ -15,7 +15,7 @@ const fetch = (url, fileName) => {
   request(url, (error, response, body) => {
     fs.open(fileName, (err, fd) => {
       if (fd) {
-        rl.question('File exists. Do you want to overwrite it?', (ans) => {
+        rl.question('File exists. Do you want to overwrite it? ', (ans) => {
           if (ans === 'y') {
             fs.write(fd, body, () => {});
             fs.close();
