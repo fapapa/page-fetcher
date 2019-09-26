@@ -19,17 +19,19 @@ const fetch = (url, fileName) => {
           if (ans === 'y') {
             fs.write(fd, body, () => {});
             fs.close();
+            logResults(response.headers['content-length'], fileName);
           }
           rl.close();
-          logResults(response.headers['content-length'], fileName);
         });
-      } else if (err.code === 'ENOENT') {
-        console.log("Invalid path.");
+      }  else {
         rl.close();
-      } else {
-        fs.writeFile(fileName, body, () => {});
-        rl.close();
-        logResults(response.headers['content-length'], fileName);
+        fs.writeFile(fileName, body, (wErr) => {
+          if (wErr && wErr.code === 'ENOENT') {
+            console.log('Invalid path.');
+          } else {
+            logResults(response.headers['content-length'], fileName);
+          }
+        });
       }
     });
   });
