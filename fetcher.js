@@ -6,6 +6,11 @@ const rl = readline.createInterface({
 const request = require('request');
 const fs = require('fs');
 
+const logResults = (bytes, fileName) => {
+  console.log(`Downloaded and saved ${bytes} bytes to ${fileName}`);
+};
+
+
 const fetch = (url, fileName) => {
   request(url, (error, response, body) => {
     fs.open(fileName, (err, fd) => {
@@ -13,15 +18,20 @@ const fetch = (url, fileName) => {
         rl.question('File exists. Do you want to overwrite it?', (ans) => {
           if (ans === 'y') {
             fs.write(fd, body, () => {});
+            fs.close();
           }
           rl.close();
+          logResults(response.headers['content-length'], fileName);
         });
+      } else if (err.code === 'ENOENT') {
+        console.log("Invalid path.");
+        rl.close();
       } else {
         fs.writeFile(fileName, body, () => {});
         rl.close();
+        logResults(response.headers['content-length'], fileName);
       }
     });
-    console.log(`Downloaded and saved ${response.headers['content-length']} bytes to ${fileName}`);
   });
 
   return;
