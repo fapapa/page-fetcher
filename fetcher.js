@@ -13,6 +13,11 @@ const logResults = (bytes, fileName) => {
 
 const fetch = (url, fileName) => {
   request(url, (error, response, body) => {
+    if (error || (response.statusCode !== 200)) {
+      console.log('Fetch failed. Please try again.');
+      rl.close();
+      return;
+    }
     fs.open(fileName, (err, fd) => {
       if (fd) {
         rl.question('File exists. Do you want to overwrite it? ', (ans) => {
